@@ -1,0 +1,5 @@
+*.pem
+data
+.DS_Store
+.project
+*.tmproj

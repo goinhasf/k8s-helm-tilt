@@ -1,0 +1,64 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: redirectscheme
+spec:
+  redirectScheme:
+    scheme: https
+    permanent: true
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-https
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    traefik.ingress.kubernetes.io/router.tls: "true"
+spec:
+  tls:
+    - secretName: default-certificate
+      hosts:
+        - "cluster.test"
+        - "*.cluster.test"
+  rules:
+    {{- range .Values.services }}
+    - host: "{{ .subdomain }}.{{ $.Values.domain }}"
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ .name }}
+                port:
+                  number: 80
+    {{- end }}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-http
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: web
+    traefik.ingress.kubernetes.io/router.middlewares: default-redirectscheme@kubernetescrd
+spec:
+  tls:
+    - secretName: default-certificate
+      hosts:
+        - "cluster.test"
+        - "*.cluster.test"
+  rules:
+    {{- range .Values.services }}
+    - host: "{{ .subdomain }}.{{ $.Values.domain }}"
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ .name }}
+                port:
+                  number: 80
+    {{- end }}
+---
+

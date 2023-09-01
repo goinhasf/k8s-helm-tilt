@@ -1,0 +1,6 @@
+{
+  "yaml.schemas": {
+    "https://raw.githubusercontent.com/rancher/k3d/main/pkg/config/config.versions.schema.json": "file:///Users/kiko.goinhas/Documents/PoCs/k8s-k3d-ingress/Cluster.yml",
+    "https://json.schemastore.org/chart.json": "file:///Users/kiko.goinhas/Documents/PoCs/k8s-k3d-ingress/infrastructure/templates/Ingress.yml"
+  }
+}
